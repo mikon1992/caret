@@ -20,12 +20,15 @@ Setelah kamu mendownload minGW seperti panduan di atas
 # Cara 
 1. Buka aplikasi msys2 minGW
 2. Install compiler C dan GTK-3 dengan code ini
-```pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-gtk3 mingw-w64-x86_64-pkgconf```
+```bash
+pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-gtk3 mingw-w64-x86_64-pkgconf
+```
 3. Extract file zip ke folder
 4. Di msys2 ketik cd dan drag folder yang sudah di extract ke dalam layar hitam msys2
 5. Jika tidak ada error jalankan program ini
-```gcc main.c GUI.c -o text_editor.exe `pkg-config --cflags --libs gtk+-3.0` -export-dynamic```
->>>>>>> 87c87555a546c3b0c50a617f49abac9f27f7dd9b
+```bash
+gcc main.c GUI.c -o text_editor.exe `pkg-config --cflags --libs gtk+-3.0` -export-dynamic
+```
 
 
 # Identitas
