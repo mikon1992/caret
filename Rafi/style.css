@@ -1,0 +1,7 @@
+#bar_bawah {
+    background-color: #3a3a3a;
+}
+
+#bar_bawah label {
+    color: rgb(35, 35, 35); /* Biar teks di dalamnya otomatis jadi putih */
+}
