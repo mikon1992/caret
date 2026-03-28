@@ -3,9 +3,14 @@
 
 #include <gtk/gtk.h>
 
-// Ini ngasih tau file lain: "Eh, variabel ini ada lho, tapi aslinya dibikin di file sebelah"
+// Ini ngasih tau file lain
 extern GtkWidget *window;
 extern GtkWidget *textview;
 extern char *lokasi_file_sekarang;
+
+// array 2d
+extern char **text_editor;
+extern int jumlah_baris;
+extern int kapasitas_baris;
 
 #endif

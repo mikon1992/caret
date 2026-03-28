@@ -7,24 +7,69 @@
 
 // var global
 char *lokasi_file_sekarang = NULL;
+char **text_editor = NULL;
+int jumlah_baris = 0;
+int kapasitas_baris = 100;
+
+void inisialisasi_array_dinamis() {
+    text_editor = malloc(kapasitas_baris * sizeof(char*));
+    for(int i =0; i < kapasitas_baris; i++) {
+        text_editor[i] = NULL;
+    }
+}
+
+void singkronisasi_layar_ke_array() {
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
+    GtkTextIter start, end;
+    gtk_text_buffer_get_bounds(buffer, &start, &end);
+    char *text_utuh = gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
+
+    for (int i = 0; i < jumlah_baris; i++) {
+        if (text_editor[i] != NULL) {
+            free(text_editor[i]);
+            text_editor[i] = NULL;
+        }
+    }
+    jumlah_baris = 0;
+
+    char *baris_text = strtok(text_utuh, "\n");
+    while (baris_text != NULL) {
+        if (jumlah_baris >= kapasitas_baris) {
+            kapasitas_baris *= 2;
+            text_editor = realloc(text_editor, kapasitas_baris * sizeof(char));
+
+            for (int i = jumlah_baris; i < kapasitas_baris; i++) {
+                text_editor[i] = NULL;
+            }
+            g_print("nambah baris jadi %d\n", kapasitas_baris);
+        }
+        text_editor[jumlah_baris] = strdup(baris_text);
+
+        jumlah_baris++;
+        baris_text = strtok(NULL, "\n");
+    }
+
+    g_free(text_utuh);
+}
 
 // fungsi pembantu
 void tulis_ke_file(const char *filepath)
 {
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-    GtkTextIter start, end;
-    gtk_text_buffer_get_bounds(buffer, &start, &end);
-    char *text = gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
+    singkronisasi_layar_ke_array();
 
     FILE *file = fopen(filepath, "w");
     if (file != NULL) {
-        fputs(text, file);
+        for (int i = 0; i < jumlah_baris; i++) {
+            fputs(text_editor[i], file);
+            if (i < jumlah_baris - 1) {
+                fputs("\n", file);
+            }
+        }
         fclose(file);
-        g_print("yey bisa, seneng plis aku udah cape buat ini(file saved to %s\n, filepath)");
+        g_print("kesave!");
     } else {
-        g_print("jirlah gagal");
+        g_print("gagal save");
     }
-    g_free(text);
 }
 
 G_MODULE_EXPORT void on_menu_save_activate(GtkMenuItem *menuitem, gpointer user_data) {
