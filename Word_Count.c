@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include "globals.h"
+#include "file_ops.h"
 
 int hitung_kata(const char *text) {
     int count = 0, in_word = 0;
@@ -31,5 +32,7 @@ void on_text_changed(GtkTextBuffer *buffer, gpointer user_data) {
     snprintf(hasil, sizeof(hasil), "Word Count: %d", jumlah);
     gtk_label_set_text(GTK_LABEL(label_word_count), hasil);
 
+
     g_free(text);
+    autoSave();
 }

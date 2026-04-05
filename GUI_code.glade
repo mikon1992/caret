@@ -115,6 +115,22 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="menu_new_named">
+                        <property name="label">New File dengan Nama...</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <signal name="activate" handler="on_menu_new_named_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu_rename">
+                        <property name="label">Rename File...</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <signal name="activate" handler="on_menu_rename_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkImageMenuItem" id="menu_open">
                         <property name="label">gtk-open</property>
                         <property name="name">menu_open</property>
