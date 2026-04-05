@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include "globals.h"
+#include "file_ops.h"
 
 // Callback: hitung kata setiap kali isi textview berubah
 G_MODULE_EXPORT void on_text_changed(GtkTextBuffer *buffer, gpointer user_data) {
@@ -25,4 +26,7 @@ G_MODULE_EXPORT void on_text_changed(GtkTextBuffer *buffer, gpointer user_data) 
     char hasil[64];
     snprintf(hasil, sizeof(hasil), "word count : %d", count);
     gtk_label_set_text(GTK_LABEL(label_word_count), hasil);
+
+    
+    autoSave();
 }
