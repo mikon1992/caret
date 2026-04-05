@@ -18,6 +18,19 @@ void inisialisasi_array_dinamis() {
     }
 }
 
+// Fungsi khusus untuk ngintip isi Array di Terminal
+void print_array_ke_terminal() {
+    g_print("\n=== DEBUG: ISI ARRAY SAAT INI ===\n");
+    g_print("Total baris terisi: %d\n", jumlah_baris);
+    
+    // Looping untuk nge-print setiap indeks array
+    for (int i = 0; i < jumlah_baris; i++) {
+        g_print("Index [%d]: %s\n", i, text_editor[i]);
+    }
+    
+    g_print("=================================\n\n");
+}
+
 void singkronisasi_layar_ke_array() {
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
     GtkTextIter start, end;
@@ -31,6 +44,12 @@ void singkronisasi_layar_ke_array() {
         }
     }
     jumlah_baris = 0;
+
+    
+void on_buffer_changed_array(GtkTextBuffer *buffer, gpointer user_data) ;
+{
+    singkronisasi_layar_ke_array();
+}
 
     char *baris_text = strtok(text_utuh, "\n");
     while (baris_text != NULL) {
@@ -50,6 +69,7 @@ void singkronisasi_layar_ke_array() {
     }
 
     g_free(text_utuh);
+    print_array_ke_terminal();
 }
 
 // fungsi pembantu

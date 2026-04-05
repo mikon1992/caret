@@ -7,7 +7,8 @@ GtkWidget *textview;
 GtkWidget *label_word_count;
 
 // Beri tahu kompilator bahwa fungsi ini ada di Word_Count.c
-extern void on_text_changed(GtkTextBuffer *buffer, gpointer user_data);
+extern void on_text_changed(GtkTextBuffer *buffer, gpointer user_data); 
+extern void on_buffer_changed_array(GtkTextBuffer *buffer, gpointer user_data);
 
 void setup_gui(int argc, char *argv[]) {
     GtkBuilder *builder;
@@ -36,8 +37,9 @@ void setup_gui(int argc, char *argv[]) {
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
     // Hubungkan fungsi hitung kata agar berjalan setiap kali teks berubah
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
+   GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
     g_signal_connect(buffer, "changed", G_CALLBACK(on_text_changed), NULL);
+    g_signal_connect(buffer, "changed", G_CALLBACK(on_buffer_changed_array), NULL);
 
     gtk_widget_show_all(window);
     gtk_main();

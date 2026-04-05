@@ -9,10 +9,9 @@ G_MODULE_EXPORT void on_menu_merge_activate(GtkMenuItem *menuitem, gpointer user
 G_MODULE_EXPORT void on_menu_open_activate(GtkMenuItem *menuitem, gpointer user_data);
 G_MODULE_EXPORT void on_menu_save_as_activate(GtkMenuItem *menuitem, gpointer user_data);
 G_MODULE_EXPORT void on_menu_daily_notes_activate(GtkMenuItem *menuitem, gpointer user_data);
-void singkronisasi_layar_ke_array();
-
 void autoSave();
 G_MODULE_EXPORT void on_menu_new_named_activate(GtkMenuItem *menuitem, gpointer user_data);
 G_MODULE_EXPORT void on_menu_rename_activate(GtkMenuItem *menuitem, gpointer user_data);
+extern void sinkronisasi_layar_ke_array();
 
 #endif
