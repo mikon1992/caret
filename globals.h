@@ -8,6 +8,7 @@ extern GtkWidget *window;
 extern GtkWidget *textview;
 extern GtkWidget *label_word_count;
 extern char *lokasi_file_sekarang;
+extern void autosave();
 
 // array 2d
 extern char **text_editor;
