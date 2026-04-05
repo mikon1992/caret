@@ -6,6 +6,8 @@
 // Ini ngasih tau file lain
 extern GtkWidget *window;
 extern GtkWidget *textview;
+extern GtkWidget *notebook;
+extern GtkWidget *bookmark_list;
 extern GtkWidget *label_word_count;
 extern char *lokasi_file_sekarang;
 
