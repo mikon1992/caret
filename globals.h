@@ -11,6 +11,7 @@ extern GtkWidget *bookmark_list;
 extern GtkWidget *label_word_count;
 extern char *lokasi_file_sekarang;
 extern void autoSave();
+extern GtkWidget *label_cursor_pos;
 
 // array 2d
 extern char **text_editor;
