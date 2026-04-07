@@ -30,8 +30,11 @@ void print_array_ke_terminal() {
     
     g_print("=================================\n\n");
 }
+void on_buffer_changed_array(GtkTextBuffer *buffer, gpointer user_data) {
+    sinkronisasi_layar_ke_array();
+}
 
-void singkronisasi_layar_ke_array() {
+void sinkronisasi_layar_ke_array() {
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
     GtkTextIter start, end;
     gtk_text_buffer_get_bounds(buffer, &start, &end);
@@ -44,12 +47,6 @@ void singkronisasi_layar_ke_array() {
         }
     }
     jumlah_baris = 0;
-
-    
-void on_buffer_changed_array(GtkTextBuffer *buffer, gpointer user_data) ;
-{
-    singkronisasi_layar_ke_array();
-}
 
     char *baris_text = strtok(text_utuh, "\n");
     while (baris_text != NULL) {
@@ -75,7 +72,7 @@ void on_buffer_changed_array(GtkTextBuffer *buffer, gpointer user_data) ;
 // fungsi pembantu
 void tulis_ke_file(const char *filepath)
 {
-    singkronisasi_layar_ke_array();
+    sinkronisasi_layar_ke_array();
 
     FILE *file = fopen(filepath, "w");
     if (file != NULL) {

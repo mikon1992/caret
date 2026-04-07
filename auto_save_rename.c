@@ -10,7 +10,7 @@
 void autoSave() {
     if (lokasi_file_sekarang == NULL) return; 
 
-    singkronisasi_layar_ke_array(); 
+    sinkronisasi_layar_ke_array(); 
 
     FILE *file = fopen(lokasi_file_sekarang, "w");
     if (file != NULL) {
