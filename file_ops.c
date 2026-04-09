@@ -52,7 +52,7 @@ void sinkronisasi_layar_ke_array() {
     while (baris_text != NULL) {
         if (jumlah_baris >= kapasitas_baris) {
             kapasitas_baris *= 2;
-            text_editor = realloc(text_editor, kapasitas_baris * sizeof(char));
+            text_editor = realloc(text_editor, kapasitas_baris * sizeof(char*));
 
             for (int i = jumlah_baris; i < kapasitas_baris; i++) {
                 text_editor[i] = NULL;

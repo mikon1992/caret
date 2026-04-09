@@ -15,7 +15,6 @@ extern void inisialisasi_array_dinamis();
 extern void on_cursor_moved(GtkTextBuffer *buffer, const GtkTextIter *location, GtkTextMark *mark, gpointer user_data);
 
 void setup_gui(int argc, char *argv[]) {
-    inisialisasi_array_dinamis();
     
     GtkBuilder *builder;
     gtk_init(&argc, &argv);
