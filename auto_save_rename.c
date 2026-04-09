@@ -3,6 +3,7 @@
 #include <string.h>
 #include "globals.h"
 #include "file_ops.h"
+#include "auto_save_rename.h"
 
 
 // AUTO SAVE
