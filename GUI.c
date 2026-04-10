@@ -21,8 +21,15 @@ void setup_gui(int argc, char *argv[]) {
     g_object_set(gtk_settings_get_default(), "gtk-application-prefer-dark-theme", TRUE, NULL);
 
     builder = gtk_builder_new();
-    if (gtk_builder_add_from_file(builder, "GUI_code.glade", NULL) == 0) {
+    GError *error = NULL; // Tambahkan variabel penyimpan error
+    
+    if (gtk_builder_add_from_file(builder, "GUI_code.glade", &error) == 0) {
         g_print("Waduh, gagal memuat file GUI_code.glade!\n");
+        if (error != NULL) {
+            // Print pesan error asli dari GTK
+            g_print("Detail Error GTK: %s\n", error->message); 
+            g_error_free(error);
+        }
         return;
     }
 
