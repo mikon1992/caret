@@ -31,6 +31,8 @@ void setup_gui(int argc, char *argv[]) {
     textview = GTK_WIDGET(gtk_builder_get_object(builder, "textview"));
     label_word_count = GTK_WIDGET(gtk_builder_get_object(builder, "word_count"));
     label_cursor_pos = GTK_WIDGET(gtk_builder_get_object(builder, "cursor_pos"));
+    notebook      = GTK_WIDGET(gtk_builder_get_object(builder, "notebook"));
+    bookmark_list = GTK_WIDGET(gtk_builder_get_object(builder, "bookmark_list"));
 
     gtk_builder_connect_signals(builder, NULL);
     g_object_unref(builder);
