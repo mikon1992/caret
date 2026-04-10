@@ -24,3 +24,13 @@ void tambah_tab(GtkButton *btn, gpointer data) {
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scroll, label);
     gtk_widget_show_all(notebook);
 }
+
+// Fungsi baru untuk menutup tab yang sedang aktif
+void tutup_tab(GtkButton *btn, gpointer data) {
+    int current_page = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
+    
+    // Pastikan ada tab yang bisa ditutup (jangan sampai menutup tab terakhir jika tidak diinginkan)
+    if (current_page >= 0) {
+        gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), current_page);
+    }
+}

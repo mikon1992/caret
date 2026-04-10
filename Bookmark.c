@@ -20,14 +20,19 @@ void tambah_bookmark(GtkButton *btn, gpointer data) {
 
     char *text = get_text(text_view);
 
-    static int no = 1;
+    // Pastikan variabel 'no' ini tetap statis agar nilainya bertambah terus
+    static int no = 1; 
     char judul[30];
-    sprintf(judul, "Bookmark %d", no++);
+    sprintf(judul, "Bookmark %d", no++); // Ini akan menghasilkan Bookmark 1, 2, dst
 
-    GtkWidget *row = gtk_label_new(judul);
-    g_object_set_data_full(G_OBJECT(row), "text", text, g_free);
+    // Buat label dengan nama unik tersebut
+    GtkWidget *label = gtk_label_new(judul);
+    
+    // Simpan isi teksnya ke dalam objek label agar bisa diambil saat diklik
+    g_object_set_data_full(G_OBJECT(label), "text", text, g_free);
 
-    gtk_list_box_insert(GTK_LIST_BOX(bookmark_list), row, -1);
+    // Masukkan ke dalam list box
+    gtk_list_box_insert(GTK_LIST_BOX(bookmark_list), label, -1);
     gtk_widget_show_all(bookmark_list);
 }
 

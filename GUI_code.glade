@@ -66,6 +66,13 @@
                       </packing>
                     </child>
                   </object>
+                  <child>
+                  <object class="GtkButton" id="btn_tutup_tab">
+                    <property name="label">X Tutup Tab</property>
+                    <property name="visible">True</property>
+                    <signal name="clicked" handler="tutup_tab" swapped="no"/>
+                  </object>
+                  </child>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
