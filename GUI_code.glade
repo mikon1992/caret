@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.24"/>
+  <object class="GtkAdjustment" id="adjustment1">
+    <property name="upper">100</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-revert-to-saved</property>
+  </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-edit</property>
+  </object>
+
+  <object class="GtkWindow" id="main">
+    <property name="can-focus">False</property>
+    <child>
+
+      <object class="GtkBox" id="box">
+        <property name="width-request">1100</property>
+        <property name="height-request">650</property>
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+
+        <!-- AREA KONTEN UTAMA (horizontal) -->
+        <child>
+          <object class="GtkPaned" id="paned_utama">
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="orientation">horizontal</property>
+            <property name="position">800</property>
+
+            <!-- KIRI: Notebook (tab editor) -->
+            <child>
+              <object class="GtkBox" id="box_kiri">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="orientation">vertical</property>
+
+                <!-- Tombol Tambah Tab -->
+                <child>
+                  <object class="GtkBox" id="box_toolbar_tab">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="orientation">horizontal</property>
+                    <property name="spacing">4</property>
+  
+                    <child>
+                      <object class="GtkButton" id="btn_tambah_tab">
+                        <property name="label">+ Tab Baru</property>
+                        <property name="visible">True</property>
+                        <signal name="clicked" handler="tambah_tab" swapped="no"/>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GtkButton" id="btn_tutup_tab">
+                        <property name="label">X Tutup Tab</property>
+                        <property name="visible">True</property>
+                        <signal name="clicked" handler="tutup_tab" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+
+                <!-- Notebook untuk tab editor -->
+                </child><child>
+                  <object class="GtkNotebook" id="notebook">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="scrollable">True</property>
+                    <property name="enable-popup">True</property>
+
+                    <!-- Tab pertama (default) -->
+                    <child>
+                      <object class="GtkScrolledWindow" id="scroll_utama">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="hscrollbar-policy">automatic</property>
+                        <property name="vscrollbar-policy">automatic</property>
+                        <child>
+                          <object class="GtkTextView" id="textview">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="wrap-mode">word-char</property>
+                            <property name="left-margin">10</property>
+                            <property name="right-margin">10</property>
+                            <property name="top-margin">6</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <!-- Label tab pertama -->
+                    <child type="tab">
+                      <object class="GtkLabel" id="label_tab1">
+                        <property name="visible">True</property>
+                        <property name="label">Tab 1</property>
+                      </object>
+                    </child>
+
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+
+              </object>
+              <packing>
+                <property name="shrink">False</property>
+                <property name="resize">True</property>
+              </packing>
+            </child>
+
+            <!-- KANAN: Panel Bookmark -->
+            <child>
+              <object class="GtkBox" id="box_bookmark">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">4</property>
+
+                <!-- Judul panel -->
+                <child>
+                  <object class="GtkLabel" id="label_judul_bookmark">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label">🔖 Bookmark</property>
+                    <property name="xalign">0.5</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="padding">6</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+
+                <!-- Tombol Tambah Bookmark -->
+                <child>
+                  <object class="GtkButton" id="btn_tambah_bookmark">
+                    <property name="label">+ Tambah Bookmark</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="tooltip-text">Simpan posisi teks saat ini sebagai bookmark</property>
+                    <signal name="clicked" handler="tambah_bookmark" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="padding">2</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+
+                <!-- Separator -->
+                <child>
+                  <object class="GtkSeparator">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+
+                <!-- List bookmark dalam scrolled window -->
+                <child>
+                  <object class="GtkScrolledWindow" id="scroll_bookmark">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="vscrollbar-policy">automatic</property>
+                    <child>
+                      <object class="GtkListBox" id="bookmark_list">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="selection-mode">single</property>
+                        <signal name="row-activated" handler="buka_bookmark" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+
+              </object>
+              <packing>
+                <property name="shrink">False</property>
+                <property name="resize">False</property>
+              </packing>
+            </child>
+
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+
+        <!-- STATUS BAR BAWAH -->
+        <child>
+          <object class="GtkBox" id="bar_bawah">
+            <property name="name">bar_bawah</property>
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <child>
+              <object class="GtkLabel" id="cursor_pos">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">Baris: 1, Kolom: 1  |  </property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="word_count">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="halign">end</property>
+                <property name="hexpand">True</property>
+                <property name="label" translatable="yes">Word Count: 0      </property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+
+      </object>
+    </child>
+
+    <!-- HEADER BAR -->
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="header">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="show-close-button">True</property>
+        <child type="title">
+          <placeholder/>
+        </child>
+        <child>
+          <object class="GtkMenuBar" id="group_button">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+
+            <!-- Menu File -->
+            <child>
+              <object class="GtkMenuItem" id="file_button">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">_File</property>
+                <property name="use-underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu_file">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_new">
+                        <property name="label">gtk-new</property>
+                        <property name="name">menu_new</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                        <signal name="activate" handler="on_menu_new_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu_new_named">
+                        <property name="label">New File dengan Nama...</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <signal name="activate" handler="on_menu_new_named_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu_rename">
+                        <property name="label">Rename File...</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <signal name="activate" handler="on_menu_rename_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_open">
+                        <property name="label">gtk-open</property>
+                        <property name="name">menu_open</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                        <signal name="activate" handler="on_menu_open_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_save">
+                        <property name="label">gtk-save</property>
+                        <property name="name">menu_save</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                        <signal name="activate" handler="on_menu_save_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_save-as">
+                        <property name="label">gtk-save-as</property>
+                        <property name="name">menu_save-as</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                        <signal name="activate" handler="on_menu_save_as_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_daily">
+                        <property name="label">daily notes</property>
+                        <property name="name">menu_daily</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image2</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_menu_daily_notes_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="separator">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="quit">
+                        <property name="label">gtk-quit</property>
+                        <property name="name">quit</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                        <signal name="activate" handler="gtk_main_quit" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+
+            <!-- Menu Edit -->
+            <child>
+              <object class="GtkMenuItem" id="edit_button">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">_Edit</property>
+                <property name="use-underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu_edit">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_cut">
+                        <property name="label">gtk-cut</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                        <signal name="activate" handler="on_menu_append_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_copy">
+                        <property name="label">gtk-copy</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_paste">
+                        <property name="label">gtk-paste</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="menu_merge">
+                        <property name="label">merge</property>
+                        <property name="name">menu_merge</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image1</property>
+                        <property name="use-stock">False</property>
+                        <signal name="activate" handler="on_menu_merge_activate" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+
+            <!-- Menu View -->
+            <child>
+              <object class="GtkMenuItem" id="view_button">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">_View</property>
+                <property name="use-underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="pending">
+                        <property name="label">gtk-stop</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+
+            <!-- Menu Help -->
+            <child>
+              <object class="GtkMenuItem" id="help_button">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="label" translatable="yes">_Help</property>
+                <property name="use-underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="help">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkImageMenuItem">
+                        <property name="label">gtk-about</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="use-underline">True</property>
+                        <property name="use-stock">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+
+          </object>
+        </child>
+
+        <!-- Logo -->
+        <child>
+          <object class="GtkOverlay" id="Logo">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <child>
+              <object class="GtkImage" id="nycto">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="pixbuf">nycto.png</property>
+              </object>
+              <packing>
+                <property name="index">-1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+
+      </object>
+    </child>
+  </object>
+</interface>
