@@ -38,8 +38,15 @@ void tambah_bookmark(GtkButton *btn, gpointer data) {
 
 // Klik bookmark
 void buka_bookmark(GtkListBox *box, GtkListBoxRow *row, gpointer data) {
-    GtkWidget *label = gtk_bin_get_child(GTK_BIN(row));
-    const char *text = g_object_get_data(G_OBJECT(label), "text");
+    // Ambil widget label yang ada di dalam baris list yang diklik
+    GtkWidget *label_dlm_list = gtk_bin_get_child(GTK_BIN(row));
+    
+    // Ambil data teks yang tersimpan (isi filenya)
+    const char *text = g_object_get_data(G_OBJECT(label_dlm_list), "text");
+    
+    // AMBIL JUDUL ASLI (Misal: "Bookmark 1", "Bookmark 2")
+    const char *judul_bookmark = gtk_label_get_text(GTK_LABEL(label_dlm_list));
+
     if (!text) return;
 
     GtkWidget *text_view = gtk_text_view_new();
@@ -49,7 +56,8 @@ void buka_bookmark(GtkListBox *box, GtkListBoxRow *row, gpointer data) {
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
     gtk_text_buffer_set_text(buffer, text, -1);
 
-    GtkWidget *tab_label = gtk_label_new("Bookmark");
+    // GUNAKAN judul_bookmark untuk label tab baru
+    GtkWidget *tab_label = gtk_label_new(judul_bookmark); 
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scroll, tab_label);
 
     gtk_widget_show_all(notebook);

@@ -27,9 +27,10 @@ void tambah_tab(GtkButton *btn, gpointer data) {
 
 // Fungsi baru untuk menutup tab yang sedang aktif
 void tutup_tab(GtkButton *btn, gpointer data) {
+    // Ambil indeks halaman yang sedang aktif/terbuka
     int current_page = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
     
-    // Pastikan ada tab yang bisa ditutup (jangan sampai menutup tab terakhir jika tidak diinginkan)
+    // Jika ada tab yang terbuka (indeks bukan -1), maka hapus
     if (current_page >= 0) {
         gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), current_page);
     }

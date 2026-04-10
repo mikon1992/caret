@@ -5,7 +5,6 @@ extern void inisialisasi_array_dinamis();
 
 int main(int argc, char *argv[]) {
     inisialisasi_array_dinamis();
-
     setup_gui(argc, argv);
     return 0;
 }
