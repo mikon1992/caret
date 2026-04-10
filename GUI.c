@@ -68,3 +68,41 @@ void on_cursor_moved(GtkTextBuffer *buffer, const GtkTextIter *location, GtkText
     
     gtk_label_set_text(GTK_LABEL(label_cursor_pos), tulisan);
 }
+
+void tambah_tab(GtkButton *button, gpointer user_data) {
+    // Hitung jumlah tab yang sudah ada
+    gint jumlah_tab = gtk_notebook_get_n_pages(GTK_NOTEBOOK(notebook));
+    
+    // Buat ScrolledWindow baru
+    GtkWidget *scroll_baru = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll_baru),
+                                   GTK_POLICY_AUTOMATIC,
+                                   GTK_POLICY_AUTOMATIC);
+    gtk_widget_show(scroll_baru);
+
+    // Buat TextView baru
+    GtkWidget *textview_baru = gtk_text_view_new();
+    gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(textview_baru), GTK_WRAP_WORD_CHAR);
+    gtk_text_view_set_left_margin(GTK_TEXT_VIEW(textview_baru), 10);
+    gtk_text_view_set_right_margin(GTK_TEXT_VIEW(textview_baru), 10);
+    gtk_text_view_set_top_margin(GTK_TEXT_VIEW(textview_baru), 6);
+    gtk_widget_show(textview_baru);
+
+    gtk_container_add(GTK_CONTAINER(scroll_baru), textview_baru);
+
+    // Hubungkan signal buffer ke TextView baru
+    GtkTextBuffer *buffer_baru = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview_baru));
+    g_signal_connect(buffer_baru, "changed", G_CALLBACK(on_text_changed), NULL);
+    g_signal_connect(buffer_baru, "changed", G_CALLBACK(on_buffer_changed_array), NULL);
+    g_signal_connect(buffer_baru, "mark-set", G_CALLBACK(on_cursor_moved), NULL);
+
+    // Buat label tab
+    char nama_tab[20];
+    snprintf(nama_tab, sizeof(nama_tab), "Tab %d", jumlah_tab + 1);
+    GtkWidget *label_tab = gtk_label_new(nama_tab);
+    gtk_widget_show(label_tab);
+
+    // Tambahkan tab ke notebook
+    gint index = gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scroll_baru, label_tab);
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), index);
+}
