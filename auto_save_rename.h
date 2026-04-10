@@ -3,13 +3,9 @@
 
 #include <gtk/gtk.h>
 
-// Otomatis simpan file 
 void autoSave();
-
-// Buat file baru dengan nama yang diinput user
+void trigger_idle_save(); // <--- Tambahkan ini
 G_MODULE_EXPORT void on_menu_new_named_activate(GtkMenuItem *menuitem, gpointer user_data);
-
-// Rename file 
 G_MODULE_EXPORT void on_menu_rename_activate(GtkMenuItem *menuitem, gpointer user_data);
 
 #endif

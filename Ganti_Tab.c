@@ -23,6 +23,11 @@ void tambah_tab(GtkButton *btn, gpointer data) {
 
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scroll, label);
     gtk_widget_show_all(notebook);
+    
+    // Coba aktifkan fitur undo bawaan (Hanya jalan di versi GTK 3 terbaru)
+    #if GTK_CHECK_VERSION(3, 24, 30)
+    g_object_set(G_OBJECT(buffer), "enable-undo", TRUE, NULL);
+    #endif
 }
 
 // Fungsi baru untuk menutup tab yang sedang aktif

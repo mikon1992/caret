@@ -1,5 +1,6 @@
 #include "file_ops.h"
 #include "globals.h"
+#include "auto_save_rename.h" 
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +12,19 @@ char **text_editor = NULL;
 int jumlah_baris = 0;
 int kapasitas_baris = 100;
 
+void update_nama_tab(const char *path) {
+    if (path == NULL || notebook == NULL) return;
+    int current = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
+    if (current < 0) return;
+    GtkWidget *page = gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), current);
+    char *nama_file = g_path_get_basename(path);
+    GtkWidget *label = gtk_label_new(nama_file);
+    gtk_notebook_set_tab_label(GTK_NOTEBOOK(notebook), page, label);
+    g_object_set_data_full(G_OBJECT(page), "file_path", g_strdup(path), g_free);
+    
+    g_free(nama_file);
+}
+
 void inisialisasi_array_dinamis() {
     text_editor = malloc(kapasitas_baris * sizeof(char*));
     for(int i =0; i < kapasitas_baris; i++) {
@@ -18,24 +32,33 @@ void inisialisasi_array_dinamis() {
     }
 }
 
-// Fungsi khusus untuk ngintip isi Array di Terminal
 void print_array_ke_terminal() {
     g_print("\n=== DEBUG: ISI ARRAY SAAT INI ===\n");
     g_print("Total baris terisi: %d\n", jumlah_baris);
-    
-    // Looping untuk nge-print setiap indeks array
     for (int i = 0; i < jumlah_baris; i++) {
         g_print("Index [%d]: %s\n", i, text_editor[i]);
     }
     
     g_print("=================================\n\n");
 }
+
 void on_buffer_changed_array(GtkTextBuffer *buffer, gpointer user_data) {
     sinkronisasi_layar_ke_array();
+    extern void trigger_idle_save(); 
+    trigger_idle_save();
 }
 
 void sinkronisasi_layar_ke_array() {
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
+    int current = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
+    if (current < 0) return; 
+
+    GtkWidget *scroll = gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), current);
+    
+    GtkWidget *active_textview = gtk_bin_get_child(GTK_BIN(scroll));
+    
+    if (!GTK_IS_TEXT_VIEW(active_textview)) return;
+
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(active_textview));
     GtkTextIter start, end;
     gtk_text_buffer_get_bounds(buffer, &start, &end);
     char *text_utuh = gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
@@ -53,14 +76,9 @@ void sinkronisasi_layar_ke_array() {
         if (jumlah_baris >= kapasitas_baris) {
             kapasitas_baris *= 2;
             text_editor = realloc(text_editor, kapasitas_baris * sizeof(char*));
-
-            for (int i = jumlah_baris; i < kapasitas_baris; i++) {
-                text_editor[i] = NULL;
-            }
-            g_print("nambah baris jadi %d\n", kapasitas_baris);
+            for (int i = jumlah_baris; i < kapasitas_baris; i++) text_editor[i] = NULL;
         }
         text_editor[jumlah_baris] = strdup(baris_text);
-
         jumlah_baris++;
         baris_text = strtok(NULL, "\n");
     }
@@ -69,24 +87,27 @@ void sinkronisasi_layar_ke_array() {
     print_array_ke_terminal();
 }
 
-// fungsi pembantu
-void tulis_ke_file(const char *filepath)
-{
+void tulis_ke_file(const char *filepath) {
     sinkronisasi_layar_ke_array();
-
     FILE *file = fopen(filepath, "w");
     if (file != NULL) {
         for (int i = 0; i < jumlah_baris; i++) {
             fputs(text_editor[i], file);
-            if (i < jumlah_baris - 1) {
-                fputs("\n", file);
-            }
+            if (i < jumlah_baris - 1) fputs("\n", file);
         }
         fclose(file);
-        g_print("kesave!");
-    } else {
-        g_print("gagal save");
+        update_nama_tab(filepath); 
+        g_print("File tersimpan: %s\n", filepath);
     }
+}
+GtkWidget* get_active_textview() {
+    if (!notebook) return NULL;
+    int current = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
+    if (current < 0) return NULL;
+    GtkWidget *scroll = gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), current);
+    GtkWidget *active_tv = gtk_bin_get_child(GTK_BIN(scroll));
+    if (active_tv && GTK_IS_TEXT_VIEW(active_tv)) return active_tv;
+    return NULL;
 }
 
 G_MODULE_EXPORT void on_menu_save_activate(GtkMenuItem *menuitem, gpointer user_data) {
@@ -109,6 +130,7 @@ G_MODULE_EXPORT void on_menu_save_activate(GtkMenuItem *menuitem, gpointer user_
         g_object_unref(native);
     } else {
         tulis_ke_file(lokasi_file_sekarang);
+        update_nama_tab(lokasi_file_sekarang);
     }
 }
 
@@ -163,7 +185,6 @@ G_MODULE_EXPORT void on_menu_open_activate(GtkMenuItem *menuitem, gpointer user_
     GtkFileChooserNative *native;
     GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
     gint res;
-
     native = gtk_file_chooser_native_new("buka file",
                                          GTK_WINDOW(window), action,
                                          "_buka", "_batal");
@@ -179,15 +200,16 @@ G_MODULE_EXPORT void on_menu_open_activate(GtkMenuItem *menuitem, gpointer user_
             fseek(file, 0, SEEK_END);
             long length = ftell(file);
             fseek(file, 0, SEEK_SET);
-
+            update_nama_tab(lokasi_file_sekarang);
             char *buffer_text = malloc(length + 1);
             if (buffer_text) {
                 fread(buffer_text, 1, length, file);
                 buffer_text[length] = '\0';
 
-                GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-                gtk_text_buffer_set_text(buffer, buffer_text, -1);
-                
+                GtkWidget *current_tv = get_active_textview();
+                if (!current_tv) return;
+                GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(current_tv));
+                gtk_text_buffer_set_text(buffer, buffer_text, -1);      
                 if (lokasi_file_sekarang != NULL) g_free(lokasi_file_sekarang);
                 lokasi_file_sekarang = g_strdup(filename);
 
@@ -201,7 +223,9 @@ G_MODULE_EXPORT void on_menu_open_activate(GtkMenuItem *menuitem, gpointer user_
         g_free(filename);
     }
     g_object_unref(native);
+    
 }
+
 G_MODULE_EXPORT void on_menu_save_as_activate(GtkMenuItem *menuitem, gpointer user_data) {
     GtkFileChooserNative *native;
     GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;

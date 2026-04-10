@@ -4,9 +4,8 @@
 #include "globals.h"
 #include "file_ops.h"
 #include "auto_save_rename.h"
+static guint idle_timer_id = 0;
 
-
-// AUTO SAVE
 
 void autoSave() {
     if (lokasi_file_sekarang == NULL) return; 
@@ -125,4 +124,23 @@ G_MODULE_EXPORT void on_menu_rename_activate(GtkMenuItem *menuitem, gpointer use
         }
     }
     gtk_widget_destroy(dialog);
+}
+
+gboolean autosave_cb(gpointer data) {
+    autoSave();
+    return TRUE; 
+}
+
+gboolean idle_save_cb(gpointer data) {
+    g_print("Idle 10 detik terdeteksi... ");
+    autoSave();
+    idle_timer_id = 0; 
+    return FALSE; 
+}
+
+void trigger_idle_save() {
+    if (idle_timer_id > 0) {
+        g_source_remove(idle_timer_id);
+    }
+    idle_timer_id = g_timeout_add_seconds(10, idle_save_cb, NULL);
 }

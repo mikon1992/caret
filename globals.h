@@ -20,5 +20,6 @@ extern void tambah_tab(GtkButton *btn, gpointer data);
 extern char **text_editor;
 extern int jumlah_baris;
 extern int kapasitas_baris;
+extern void update_nama_tab(const char *path);
 
 #endif
