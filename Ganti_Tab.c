@@ -1,6 +1,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 #include "globals.h"
+#include "wordnotemark.h"
 
 // dari word_count.c
 extern void on_text_changed(GtkTextBuffer *buffer, gpointer user_data);

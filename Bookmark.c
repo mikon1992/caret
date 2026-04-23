@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "globals.h"
 #include "file_ops.h" 
+#include "wordnotemark.h"
 
 char* get_text(GtkWidget *text_view) {
     if (!text_view || !GTK_IS_TEXT_VIEW(text_view)) {

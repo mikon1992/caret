@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "globals.h"
 #include "file_ops.h"
+#include "wordnotemark.h"
 
 int hitung_kata(const char *text) {
     int count = 0, in_word = 0;
