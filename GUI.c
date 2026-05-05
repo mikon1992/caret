@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 #include "globals.h"
 
-// Variabel Global (Hanya deklarasi, jangan double)
+
 GtkWidget *window;
 GtkWidget *textview;
 GtkWidget *label_word_count;
@@ -9,21 +9,18 @@ GtkWidget *notebook;
 GtkWidget *bookmark_list;
 GtkWidget *label_cursor_pos;
 
-// Fungsi-fungsi dari file lain
 extern gboolean autosave_cb(gpointer data);
 extern void on_text_changed(GtkTextBuffer *buffer, gpointer user_data); 
-extern void on_buffer_changed_array(GtkTextBuffer *buffer, gpointer user_data);
-extern void inisialisasi_array_dinamis();
+extern void on_buffer_changed(GtkTextBuffer *buffer, gpointer user_data);
 extern void on_cursor_moved(GtkTextBuffer *buffer, const GtkTextIter *location, GtkTextMark *mark, gpointer user_data);
 extern void muat_bookmark_dari_file();
 
 void setup_gui(int argc, char *argv[]) {
     GtkBuilder *builder;
-    GError *error = NULL; // KUNCI: Harus ada deklarasi error agar tidak merah
+    GError *error = NULL; 
 
     gtk_init(&argc, &argv);
 
-    // Tema Dark
     g_object_set(gtk_settings_get_default(), "gtk-application-prefer-dark-theme", TRUE, NULL);
 
     builder = gtk_builder_new();
@@ -33,17 +30,14 @@ void setup_gui(int argc, char *argv[]) {
         return;
     }
 
-    // --- 1. AMBIL WIDGET WINDOW DULU ---
     window = GTK_WIDGET(gtk_builder_get_object(builder, "main"));
     if (window == NULL) {
         g_print("Error: Widget 'main' tidak ketemu di Glade!\n");
         return;
     }
 
-    // Hubungkan tombol X di pojok kanan
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-    // --- 2. PASANG SHORTCUT (CTRL+S, CTRL+O, DLL) ---
     GtkAccelGroup *accel_group = gtk_accel_group_new();
     gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
 
@@ -62,29 +56,23 @@ void setup_gui(int argc, char *argv[]) {
         }
     }
 
-    // --- 3. AMBIL WIDGET LAINNYA ---
     textview = GTK_WIDGET(gtk_builder_get_object(builder, "textview"));
     label_word_count = GTK_WIDGET(gtk_builder_get_object(builder, "word_count"));
     label_cursor_pos = GTK_WIDGET(gtk_builder_get_object(builder, "cursor_pos"));
     notebook      = GTK_WIDGET(gtk_builder_get_object(builder, "notebook"));
     bookmark_list = GTK_WIDGET(gtk_builder_get_object(builder, "bookmark_list"));
 
-    // --- 4. HUBUNGKAN SIGNAL BUFFER (TAB PERTAMA) ---
     if (textview) {
         GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
         g_signal_connect(buffer, "changed", G_CALLBACK(on_text_changed), NULL);
-        g_signal_connect(buffer, "changed", G_CALLBACK(on_buffer_changed_array), NULL);
+        g_signal_connect(buffer, "changed", G_CALLBACK(on_buffer_changed), NULL);
         g_signal_connect(buffer, "mark-set", G_CALLBACK(on_cursor_moved), NULL);
         
-        // Aktifkan Undo di tab pertama
         g_object_set(G_OBJECT(buffer), "enable-undo", TRUE, NULL);
     }
 
-    // --- 5. TIMER & PERMANEN DATA ---
-    // Autosave tiap 60 detik (1 menit)
     g_timeout_add_seconds(60, autosave_cb, NULL); 
     
-    // Muat bookmark lama
     muat_bookmark_dari_file();
 
     gtk_builder_connect_signals(builder, NULL);
@@ -94,7 +82,6 @@ void setup_gui(int argc, char *argv[]) {
     gtk_main();
 }
 
-// Fungsi kursor (Tetap sama)
 void on_cursor_moved(GtkTextBuffer *buffer, const GtkTextIter *location, GtkTextMark *mark, gpointer user_data) {
     if (mark != gtk_text_buffer_get_insert(buffer)) return;
 

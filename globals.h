@@ -15,8 +15,24 @@ extern GtkWidget *label_cursor_pos;
 extern void tutup_tab(GtkButton *btn, gpointer data);
 extern void tambah_tab(GtkButton *btn, gpointer data);
 
-// ...
-// array 2d
+typedef struct LineNode {
+    char *text;
+    struct LineNode *prev;
+    struct LineNode *next;
+} LineNode;
+
+typedef struct TabNode {
+    int tab_index;
+    char *filepath;
+    struct TabNode *next;
+} TabNode;
+
+extern TabNode *head_tab;
+extern void free_linked_list();
+extern void tambah_info_tab(int index, const char *path);
+extern char* dapatkan_path_tab(int index);
+extern LineNode *head_editor;
+extern LineNode *tail_editor;
 extern char **text_editor;
 extern int jumlah_baris;
 extern int kapasitas_baris;

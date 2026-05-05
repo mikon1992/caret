@@ -9,22 +9,9 @@ static guint idle_timer_id = 0;
 
 void autoSave() {
     if (lokasi_file_sekarang == NULL) return; 
-
-    sinkronisasi_layar_ke_array(); 
-
-    FILE *file = fopen(lokasi_file_sekarang, "w");
-    if (file != NULL) {
-        for (int i = 0; i < jumlah_baris; i++) {
-            fputs(text_editor[i], file);
-            if (i < jumlah_baris - 1) fputs("\n", file);
-        }
-        fclose(file);
-        g_print("auto save ke: %s\n", lokasi_file_sekarang);
-    }
+    extern void tulis_ke_file(const char *filepath);
+    tulis_ke_file(lokasi_file_sekarang);
 }
-
-
-// NEW FILE DENGAN NAMA
 
 G_MODULE_EXPORT void on_menu_new_named_activate(GtkMenuItem *menuitem, gpointer user_data) {
     GtkWidget *dialog = gtk_dialog_new_with_buttons(
