@@ -9,8 +9,6 @@
 // var global
 char *lokasi_file_sekarang = NULL;
 char **text_editor = NULL;
-int jumlah_baris = 0;
-int kapasitas_baris = 100;
 LineNode *head_editor = NULL;
 LineNode *tail_editor = NULL;
 TabNode *head_tab = NULL;
@@ -26,7 +24,6 @@ void tambah_info_tab(int index, const char *path) {
         }
         current = current->next;
     }
-
     TabNode *new_node = malloc(sizeof(TabNode));
     new_node->tab_index = index;
     new_node->filepath = g_strdup(path);
@@ -330,3 +327,63 @@ G_MODULE_EXPORT void on_menu_daily_notes_activate(GtkMenuItem *menuitem, gpointe
     if (lokasi_file_sekarang != NULL) g_free(lokasi_file_sekarang);
     lokasi_file_sekarang = g_strdup(filename);
 } 
+
+#include <string.h>
+
+// Nama fungsi disesuaikan dengan signal 'clicked' yang kamu tulis di Glade
+G_MODULE_EXPORT void on_btn_clicked(GtkButton *btn, gpointer user_data) {
+    
+    // Membuat dialog pop-up sederhana
+    GtkWidget *dialog = gtk_dialog_new_with_buttons(
+        "Tanya AI",
+        GTK_WINDOW(window), // Mengambil window utama
+        GTK_DIALOG_MODAL,
+        "Tanya", GTK_RESPONSE_OK,
+        "Batal", GTK_RESPONSE_CANCEL,
+        NULL
+    );
+
+    // Kotak input untuk mengetik pertanyaan
+    GtkWidget *entry = gtk_entry_new();
+    gtk_entry_set_placeholder_text(GTK_ENTRY(entry), "Mau tanya apa ke AI?");
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), entry, FALSE, FALSE, 5);
+    gtk_widget_show_all(dialog);
+
+    // Jika user menekan tombol "Tanya" (OK)
+    if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
+        const char *prompt = gtk_entry_get_text(GTK_ENTRY(entry));
+
+        if (strlen(prompt) > 0) {
+            char command[1024];
+            // Pastikan file python-nya bernama gemini_bridge.py dan ada di folder yang sama
+            snprintf(command, sizeof(command), "C:/Users/rafia/AppData/Local/Python/pythoncore-3.14-64/python.exe gemini_bridge.py \"%s\" 2>&1", prompt);
+            FILE *fp = popen(command, "r");
+            if (fp != NULL) {
+                char buffer[256];
+                GString *hasil_ai = g_string_new("");
+
+                while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+                    g_string_append(hasil_ai, buffer);
+                }
+                pclose(fp);
+
+                // Taruh hasil AI ke tab yang sedang aktif
+                GtkWidget *active_tv = get_active_textview(); 
+                if (active_tv) {
+                    GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(active_tv));
+                    GtkTextIter iter;
+                    
+                    gtk_text_buffer_get_iter_at_mark(buf, &iter, gtk_text_buffer_get_insert(buf));
+                    
+                    gtk_text_buffer_insert(buf, &iter, "\n\n🤖 --- Jawaban AI ---\n", -1);
+                    gtk_text_buffer_insert(buf, &iter, hasil_ai->str, -1);
+                    gtk_text_buffer_insert(buf, &iter, "\n----------------------\n", -1);
+                }
+                g_string_free(hasil_ai, TRUE);
+            } else {
+                g_print("Waduh, gagal ngejalanin script AI!\n");
+            }
+        }
+    }
+    gtk_widget_destroy(dialog);
+}

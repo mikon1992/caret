@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "globals.h"
 #include "file_ops.h"
-#include "wordnotemark.h"
 
 int hitung_kata(const char *text) {
     int count = 0, in_word = 0;
@@ -35,5 +34,4 @@ void on_text_changed(GtkTextBuffer *buffer, gpointer user_data) {
 
 
     g_free(text);
-    autoSave();
 }

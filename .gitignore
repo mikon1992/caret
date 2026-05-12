@@ -1,0 +1,5 @@
+.env
+caret
+caret.exe
+*.o
+*.py
