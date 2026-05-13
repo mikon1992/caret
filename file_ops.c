@@ -13,7 +13,6 @@ LineNode *head_editor = NULL;
 LineNode *tail_editor = NULL;
 TabNode *head_tab = NULL;
 
-
 void tambah_info_tab(int index, const char *path) {
     TabNode *current = head_tab;
     while (current != NULL) {
@@ -102,19 +101,16 @@ void update_nama_tab(const char *path) {
     g_free(nama_file);
 }
 
-
-
 void on_buffer_changed(GtkTextBuffer *buffer, gpointer user_data) {
     extern void trigger_idle_save(); 
     trigger_idle_save();
 }
 
-
 void tulis_ke_file(const char *filepath) {
     sinkronisasi_layar_ke_list();
     FILE *file = fopen(filepath, "w");
    if (file != NULL) {
-        LineNode *current = head_editor; // FIX: Looping pakai Linked List
+        LineNode *current = head_editor;
         while (current != NULL) {
             fputs(current->text, file);
             if (current->next != NULL) fputs("\n", file);
@@ -144,30 +140,37 @@ G_MODULE_EXPORT void on_menu_save_activate(GtkMenuItem *menuitem, gpointer user_
         GtkFileChooserNative *native;
         GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
         gint res;
-        native = gtk_file_chooser_native_new("simpen file baru jir",
+        native = gtk_file_chooser_native_new("Simpan file baru jir",
                                              GTK_WINDOW(window), action,
-                                             "_save", "_Cancel");
+                                             "_Save", "_Cancel");
     
+        GtkFileChooser *chooser = GTK_FILE_CHOOSER(native);
+        
+        GtkFileFilter *filter_txt = gtk_file_filter_new();
+        gtk_file_filter_set_name(filter_txt, "Text Document (*.txt)");
+        gtk_file_filter_add_pattern(filter_txt, "*.txt");
+        gtk_file_chooser_add_filter(chooser, filter_txt);
+
+        GtkFileFilter *filter_md = gtk_file_filter_new();
+        gtk_file_filter_set_name(filter_md, "Markdown File (*.md)");
+        gtk_file_filter_add_pattern(filter_md, "*.md");
+        gtk_file_chooser_add_filter(chooser, filter_md);
+        
+        gtk_file_chooser_set_do_overwrite_confirmation(chooser, TRUE);
+        
         res = gtk_native_dialog_run(GTK_NATIVE_DIALOG(native));
         
         if (res == GTK_RESPONSE_ACCEPT) {
-            GtkFileChooser *chooser = GTK_FILE_CHOOSER(native);
             char *filename = gtk_file_chooser_get_filename(chooser);
-            
             tulis_ke_file(filename);
-            tambah_info_tab(current_tab, filename); // Simpan info ke List Tab
-            
-            if (lokasi_file_sekarang != NULL) g_free(lokasi_file_sekarang);
-            lokasi_file_sekarang = g_strdup(filename);
-            
             g_free(filename);
         }
         g_object_unref(native);
     } else {
         tulis_ke_file(path_aktif);
-        update_nama_tab(path_aktif);
     }
 }
+
 G_MODULE_EXPORT void on_menu_new_activate(GtkMenuItem *menuitem, gpointer user_data) {
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
     gtk_text_buffer_set_text(buffer, "", -1);
@@ -253,7 +256,6 @@ G_MODULE_EXPORT void on_menu_open_activate(GtkMenuItem *menuitem, gpointer user_
         g_free(filename);
     }
     g_object_unref(native);
-    
 }
 
 G_MODULE_EXPORT void on_menu_save_as_activate(GtkMenuItem *menuitem, gpointer user_data) {
@@ -265,21 +267,38 @@ G_MODULE_EXPORT void on_menu_save_as_activate(GtkMenuItem *menuitem, gpointer us
                                          GTK_WINDOW(window), action,
                                          "_Simpan", "_Batal");
 
+    GtkFileChooser *chooser = GTK_FILE_CHOOSER(native);
+    
+    GtkFileFilter *filter_txt = gtk_file_filter_new();
+    gtk_file_filter_set_name(filter_txt, "Text Document (*.txt)");
+    gtk_file_filter_add_pattern(filter_txt, "*.txt");
+    gtk_file_chooser_add_filter(chooser, filter_txt);
+
+    GtkFileFilter *filter_md = gtk_file_filter_new();
+    gtk_file_filter_set_name(filter_md, "Markdown File (*.md)");
+    gtk_file_filter_add_pattern(filter_md, "*.md");
+    gtk_file_chooser_add_filter(chooser, filter_md);
+
+    gtk_file_chooser_set_do_overwrite_confirmation(chooser, TRUE);
+
     res = gtk_native_dialog_run(GTK_NATIVE_DIALOG(native));
     
     if (res == GTK_RESPONSE_ACCEPT) {
-        GtkFileChooser *chooser = GTK_FILE_CHOOSER(native);
         char *filename = gtk_file_chooser_get_filename(chooser);
+        
         if (lokasi_file_sekarang != NULL) g_free(lokasi_file_sekarang);
         lokasi_file_sekarang = g_strdup(filename);
-        GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
+        
+        GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(get_active_textview()));
         GtkTextIter start, end;
         gtk_text_buffer_get_bounds(buffer, &start, &end);
         char *text = gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
+        
         FILE *file = fopen(lokasi_file_sekarang, "w");
         if (file != NULL) {
             fputs(text, file);
             fclose(file);
+            update_nama_tab(lokasi_file_sekarang);
             g_print("File berhasil di-Save As ke: %s\n", lokasi_file_sekarang);
         }
         g_free(text);
@@ -328,34 +347,26 @@ G_MODULE_EXPORT void on_menu_daily_notes_activate(GtkMenuItem *menuitem, gpointe
     lokasi_file_sekarang = g_strdup(filename);
 } 
 
-#include <string.h>
-
-// Nama fungsi disesuaikan dengan signal 'clicked' yang kamu tulis di Glade
 G_MODULE_EXPORT void on_btn_clicked(GtkButton *btn, gpointer user_data) {
-    
-    // Membuat dialog pop-up sederhana
     GtkWidget *dialog = gtk_dialog_new_with_buttons(
         "Tanya AI",
-        GTK_WINDOW(window), // Mengambil window utama
+        GTK_WINDOW(window), 
         GTK_DIALOG_MODAL,
         "Tanya", GTK_RESPONSE_OK,
         "Batal", GTK_RESPONSE_CANCEL,
         NULL
     );
 
-    // Kotak input untuk mengetik pertanyaan
     GtkWidget *entry = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(entry), "Mau tanya apa ke AI?");
     gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), entry, FALSE, FALSE, 5);
     gtk_widget_show_all(dialog);
 
-    // Jika user menekan tombol "Tanya" (OK)
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
         const char *prompt = gtk_entry_get_text(GTK_ENTRY(entry));
 
         if (strlen(prompt) > 0) {
             char command[1024];
-            // Pastikan file python-nya bernama gemini_bridge.py dan ada di folder yang sama
             snprintf(command, sizeof(command), "C:/Users/rafia/AppData/Local/Python/pythoncore-3.14-64/python.exe gemini_bridge.py \"%s\" 2>&1", prompt);
             FILE *fp = popen(command, "r");
             if (fp != NULL) {
@@ -367,7 +378,6 @@ G_MODULE_EXPORT void on_btn_clicked(GtkButton *btn, gpointer user_data) {
                 }
                 pclose(fp);
 
-                // Taruh hasil AI ke tab yang sedang aktif
                 GtkWidget *active_tv = get_active_textview(); 
                 if (active_tv) {
                     GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(active_tv));

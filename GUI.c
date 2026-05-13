@@ -61,7 +61,17 @@ void setup_gui(int argc, char *argv[]) {
     label_cursor_pos = GTK_WIDGET(gtk_builder_get_object(builder, "cursor_pos"));
     notebook      = GTK_WIDGET(gtk_builder_get_object(builder, "notebook"));
     bookmark_list = GTK_WIDGET(gtk_builder_get_object(builder, "bookmark_list"));
-
+    if (notebook) {
+        GtkWidget *add_tab_btn = gtk_button_new_from_icon_name("list-add-symbolic", GTK_ICON_SIZE_MENU);
+        gtk_button_set_relief(GTK_BUTTON(add_tab_btn), GTK_RELIEF_NONE);
+        gtk_widget_set_focus_on_click(add_tab_btn, FALSE);
+        gtk_widget_show(add_tab_btn);
+        
+        g_signal_connect(add_tab_btn, "clicked", G_CALLBACK(tambah_tab), NULL);
+        
+        gtk_notebook_set_action_widget(GTK_NOTEBOOK(notebook), add_tab_btn, GTK_PACK_END);
+    }
+    // -----------------------------------------------------------
     if (textview) {
         GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
         g_signal_connect(buffer, "changed", G_CALLBACK(on_text_changed), NULL);
