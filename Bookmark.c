@@ -122,7 +122,7 @@ void buka_bookmark(GtkListBox *box, GtkListBoxRow *row, gpointer data) {
 void muat_bookmark_dari_file() {
     FILE *f = fopen("bookmarks.txt", "r");
     if (!f) {
-        g_print("Info: Belum ada file bookmarks.txt, dilewati saja.\n");
+        g_print("Info: Belum ada file bookmarks.txt sama sekali.\n");
         return;
     }
 

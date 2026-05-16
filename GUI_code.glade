@@ -163,11 +163,12 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btn_tambah_bookmark">
-                    <property name="label">+ Tambah Bookmark</property>
+                   <property name="label">+ Tambah Bookmark</property>
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="tooltip-text">Simpan posisi teks saat ini sebagai bookmark</property>
+                   <property name="can-focus">True</property>
+                   <property name="receives-default">False</property>
+                   <property name="tooltip-text">Simpan posisi teks saat ini sebagai bookmark</property>
+                    <signal name="clicked" handler="tambah_bookmark" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
