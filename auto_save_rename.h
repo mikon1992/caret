@@ -3,8 +3,17 @@
 
 #include <gtk/gtk.h>
 
+typedef struct RiwayatRename {
+    char *nama_lama;
+    struct RiwayatRename *next;
+} RiwayatRename;
+
+void tambah_riwayat(const char *nama);
+void print_riwayat();
+void hapus_semua_riwayat();
+
 void autoSave();
-void trigger_idle_save(); // <--- Tambahkan ini
+void trigger_idle_save(); 
 G_MODULE_EXPORT void on_menu_new_named_activate(GtkMenuItem *menuitem, gpointer user_data);
 G_MODULE_EXPORT void on_menu_rename_activate(GtkMenuItem *menuitem, gpointer user_data);
 
