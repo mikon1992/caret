@@ -71,14 +71,16 @@ void setup_gui(int argc, char *argv[]) {
         
         gtk_notebook_set_action_widget(GTK_NOTEBOOK(notebook), add_tab_btn, GTK_PACK_END);
     }
-    // -----------------------------------------------------------
+
     if (textview) {
         GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
         g_signal_connect(buffer, "changed", G_CALLBACK(on_text_changed), NULL);
         g_signal_connect(buffer, "changed", G_CALLBACK(on_buffer_changed), NULL);
         g_signal_connect(buffer, "mark-set", G_CALLBACK(on_cursor_moved), NULL);
         
+        #if GTK_CHECK_VERSION(3, 24, 30)
         g_object_set(G_OBJECT(buffer), "enable-undo", TRUE, NULL);
+        #endif
     }
 
     g_timeout_add_seconds(60, autosave_cb, NULL); 

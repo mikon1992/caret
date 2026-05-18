@@ -140,7 +140,7 @@ G_MODULE_EXPORT void on_menu_save_activate(GtkMenuItem *menuitem, gpointer user_
         GtkFileChooserNative *native;
         GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
         gint res;
-        native = gtk_file_chooser_native_new("Simpan file baru jir",
+        native = gtk_file_chooser_native_new("Simpan file baru",
                                              GTK_WINDOW(window), action,
                                              "_Save", "_Cancel");
     
@@ -238,14 +238,12 @@ G_MODULE_EXPORT void on_menu_open_activate(GtkMenuItem *menuitem, gpointer user_
             if (buffer_text) {
                 fread(buffer_text, 1, length, file);
                 buffer_text[length] = '\0';
-
                 GtkWidget *current_tv = get_active_textview();
                 if (!current_tv) return;
                 GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(current_tv));
                 gtk_text_buffer_set_text(buffer, buffer_text, -1);      
                 if (lokasi_file_sekarang != NULL) g_free(lokasi_file_sekarang);
                 lokasi_file_sekarang = g_strdup(filename);
-
                 g_print("berhasil buka file %s\n", filename);
                 free(buffer_text);
             }
@@ -262,27 +260,21 @@ G_MODULE_EXPORT void on_menu_save_as_activate(GtkMenuItem *menuitem, gpointer us
     GtkFileChooserNative *native;
     GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
     gint res;
-
     native = gtk_file_chooser_native_new("Simpan Sebagai...",
                                          GTK_WINDOW(window), action,
                                          "_Simpan", "_Batal");
 
     GtkFileChooser *chooser = GTK_FILE_CHOOSER(native);
-    
     GtkFileFilter *filter_txt = gtk_file_filter_new();
     gtk_file_filter_set_name(filter_txt, "Text Document (*.txt)");
     gtk_file_filter_add_pattern(filter_txt, "*.txt");
     gtk_file_chooser_add_filter(chooser, filter_txt);
-
     GtkFileFilter *filter_md = gtk_file_filter_new();
     gtk_file_filter_set_name(filter_md, "Markdown File (*.md)");
     gtk_file_filter_add_pattern(filter_md, "*.md");
     gtk_file_chooser_add_filter(chooser, filter_md);
-
     gtk_file_chooser_set_do_overwrite_confirmation(chooser, TRUE);
-
-    res = gtk_native_dialog_run(GTK_NATIVE_DIALOG(native));
-    
+    res = gtk_native_dialog_run(GTK_NATIVE_DIALOG(native)); 
     if (res == GTK_RESPONSE_ACCEPT) {
         char *filename = gtk_file_chooser_get_filename(chooser);
         
@@ -356,15 +348,12 @@ G_MODULE_EXPORT void on_btn_clicked(GtkButton *btn, gpointer user_data) {
         "Batal", GTK_RESPONSE_CANCEL,
         NULL
     );
-
     GtkWidget *entry = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(entry), "Mau tanya apa ke AI?");
     gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), entry, FALSE, FALSE, 5);
     gtk_widget_show_all(dialog);
-
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
         const char *prompt = gtk_entry_get_text(GTK_ENTRY(entry));
-
         if (strlen(prompt) > 0) {
             char command[1024];
             snprintf(command, sizeof(command), "C:/Users/rafia/AppData/Local/Python/pythoncore-3.14-64/python.exe gemini_bridge.py \"%s\" 2>&1", prompt);
@@ -372,12 +361,10 @@ G_MODULE_EXPORT void on_btn_clicked(GtkButton *btn, gpointer user_data) {
             if (fp != NULL) {
                 char buffer[256];
                 GString *hasil_ai = g_string_new("");
-
                 while (fgets(buffer, sizeof(buffer), fp) != NULL) {
                     g_string_append(hasil_ai, buffer);
                 }
                 pclose(fp);
-
                 GtkWidget *active_tv = get_active_textview(); 
                 if (active_tv) {
                     GtkTextBuffer *buf = gtk_text_view_get_buffer(GTK_TEXT_VIEW(active_tv));
