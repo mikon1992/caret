@@ -8,6 +8,7 @@ GtkWidget *label_word_count;
 GtkWidget *notebook;
 GtkWidget *bookmark_list;
 GtkWidget *label_cursor_pos;
+GtkWidget *listbox_riwayat;
 
 extern gboolean autosave_cb(gpointer data);
 extern void on_text_changed(GtkTextBuffer *buffer, gpointer user_data); 
@@ -61,6 +62,7 @@ void setup_gui(int argc, char *argv[]) {
     label_cursor_pos = GTK_WIDGET(gtk_builder_get_object(builder, "cursor_pos"));
     notebook      = GTK_WIDGET(gtk_builder_get_object(builder, "notebook"));
     bookmark_list = GTK_WIDGET(gtk_builder_get_object(builder, "bookmark_list"));
+    listbox_riwayat = GTK_WIDGET(gtk_builder_get_object(builder, "listbox_riwayat"));
     if (notebook) {
         GtkWidget *add_tab_btn = gtk_button_new_from_icon_name("list-add-symbolic", GTK_ICON_SIZE_MENU);
         gtk_button_set_relief(GTK_BUTTON(add_tab_btn), GTK_RELIEF_NONE);

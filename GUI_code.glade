@@ -163,12 +163,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btn_tambah_bookmark">
-                   <property name="label">+ Tambah Bookmark</property>
+                    <property name="label">+ Tambah Bookmark</property>
                     <property name="visible">True</property>
-                   <property name="can-focus">True</property>
-                   <property name="receives-default">False</property>
-                   <property name="tooltip-text">Simpan posisi teks saat ini sebagai bookmark</property>
-                    <signal name="clicked" handler="tambah_bookmark" swapped="no"/>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">False</property>
+                    <property name="tooltip-text">Simpan posisi teks saat ini sebagai bookmark</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -194,6 +193,14 @@
                     <property name="can-focus">True</property>
                     <property name="hscrollbar-policy">never</property>
                     <property name="shadow-type">none</property>
+                    <child>
+                      <object class="GtkListBox" id="bookmark_list">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="selection-mode">single</property>
+                        <signal name="row-activated" handler="buka_bookmark" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -201,6 +208,59 @@
                     <property name="position">3</property>
                   </packing>
                 </child>
+
+                <child>
+                  <object class="GtkSeparator">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+
+                <child>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label">📝 Riwayat Rename</property>
+                    <property name="xalign">0.5</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="padding">6</property>
+                    <property name="position">5</property>
+                  </packing>
+                </child>
+
+                <child>
+                  <object class="GtkScrolledWindow" id="scroll_riwayat">
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="shadow-type">none</property>
+                    <property name="min-content-height">80</property>
+                    <child>
+                      <object class="GtkListBox" id="listbox_riwayat">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="selection-mode">none</property>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">6</property>
+                  </packing>
+                </child>
+
               </object>
               <packing>
                 <property name="resize">False</property>
