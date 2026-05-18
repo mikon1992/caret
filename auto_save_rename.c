@@ -7,6 +7,8 @@
 
 static guint idle_timer_id = 0;
 
+// RIWAYAT RENAME
+
 static RiwayatRename *head_riwayat = NULL;
 
 void tambah_riwayat(const char *nama) {
@@ -16,14 +18,24 @@ void tambah_riwayat(const char *nama) {
 
     if (head_riwayat == NULL) {
         head_riwayat = node_baru;
-        return;
+    } else {
+        RiwayatRename *sementara = head_riwayat;
+        while (sementara->next != NULL) {
+            sementara = sementara->next;
+        }
+        sementara->next = node_baru;
     }
 
-    RiwayatRename *sementara = head_riwayat;
-    while (sementara->next != NULL) {
-        sementara = sementara->next;
+    if (listbox_riwayat) {
+        GtkWidget *label = gtk_label_new(nama);
+        gtk_widget_set_halign(label, GTK_ALIGN_START);
+        gtk_widget_set_margin_start(label, 6);
+        gtk_widget_set_margin_end(label, 6);
+        gtk_widget_set_margin_top(label, 3);
+        gtk_widget_set_margin_bottom(label, 3);
+        gtk_list_box_insert(GTK_LIST_BOX(listbox_riwayat), label, -1);
+        gtk_widget_show_all(listbox_riwayat);
     }
-    sementara->next = node_baru;
 }
 
 void print_riwayat() {
