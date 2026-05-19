@@ -34,5 +34,4 @@ void on_text_changed(GtkTextBuffer *buffer, gpointer user_data) {
 
 
     g_free(text);
-    autoSave();
 }
