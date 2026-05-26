@@ -164,7 +164,7 @@
                     <property name="can-focus">True</property>
                     <property name="receives-default">False</property>
                     <property name="tooltip-text">Simpan posisi teks saat ini sebagai bookmark</property>
-                    <signal name="activate" handler="btn_tambah_bookmark_activate_cb" swapped="no"/>
+                    <signal name="clicked" handler="tambah_bookmark" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -189,6 +189,13 @@
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="hscrollbar-policy">never</property>
+                    <child>
+                      <object class="GtkListBox" id="bookmark_list">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <signal name="row-activated" handler="buka_bookmark" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">True</property>
