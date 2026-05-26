@@ -68,7 +68,7 @@ char* get_text(GtkWidget *text_view) {
     return gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
 }
 
-void tambah_bookmark(GtkButton *btn, gpointer data) {
+G_MODULE_EXPORT void tambah_bookmark(GtkButton *btn, gpointer data) {
     GtkWidget *text_view = get_active_textview();
     if (!text_view) return;
 
@@ -98,7 +98,7 @@ void tambah_bookmark(GtkButton *btn, gpointer data) {
     g_print("Bookmark '%s' berhasil disimpan ke file dan daftar!\n", judul);
 }
 
-void buka_bookmark(GtkListBox *box, GtkListBoxRow *row, gpointer data) {
+G_MODULE_EXPORT void buka_bookmark(GtkListBox *box, GtkListBoxRow *row, gpointer data) {
     GtkWidget *label_dlm_list = gtk_bin_get_child(GTK_BIN(row));
     const char *judul_bookmark = gtk_label_get_text(GTK_LABEL(label_dlm_list));
 
