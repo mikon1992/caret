@@ -25,7 +25,6 @@ void tambah_riwayat(const char *nama) {
         }
         sementara->next = node_baru;
     }
-
     if (listbox_riwayat) {
         GtkWidget *label = gtk_label_new(nama);
         gtk_widget_set_halign(label, GTK_ALIGN_START);

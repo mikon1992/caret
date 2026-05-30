@@ -3,7 +3,7 @@
 
 #include <gtk/gtk.h>
 
-typedef struct LineNode {
+typedef struct LineNode { 
     char *text;
     struct LineNode *prev;
     struct LineNode *next;

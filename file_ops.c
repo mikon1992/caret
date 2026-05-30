@@ -55,10 +55,9 @@ void free_linked_list(){
 
 void append_line(const char *text) {
     LineNode *new_node = malloc(sizeof(LineNode));
-    new_node->text = g_strdup(text);
-    new_node->next = NULL;
+    new_node->text = g_strdup(text); 
+    new_node->next = NULL; 
     new_node->prev = tail_editor;
-
     if (head_editor == NULL) {
         head_editor = new_node;
     } else {
@@ -77,9 +76,7 @@ void sinkronisasi_layar_ke_list() {
     GtkTextIter start, end;
     gtk_text_buffer_get_bounds(buffer, &start, &end);
     char *text_utuh = gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
-    
     free_linked_list();
-
     char **baris_array = g_strsplit(text_utuh, "\n", -1);
     for (int i = 0; baris_array[i] != NULL; i++) {
         append_line(baris_array[i]);
@@ -135,7 +132,6 @@ GtkWidget* get_active_textview() {
 G_MODULE_EXPORT void on_menu_save_activate(GtkMenuItem *menuitem, gpointer user_data) {
     int current_tab = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
     char *path_aktif = dapatkan_path_tab(current_tab);
-
     if (path_aktif == NULL){
         GtkFileChooserNative *native;
         GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
@@ -143,21 +139,17 @@ G_MODULE_EXPORT void on_menu_save_activate(GtkMenuItem *menuitem, gpointer user_
         native = gtk_file_chooser_native_new("Simpan file baru",
                                              GTK_WINDOW(window), action,
                                              "_Save", "_Cancel");
-    
         GtkFileChooser *chooser = GTK_FILE_CHOOSER(native);
         
         GtkFileFilter *filter_txt = gtk_file_filter_new();
         gtk_file_filter_set_name(filter_txt, "Text Document (*.txt)");
         gtk_file_filter_add_pattern(filter_txt, "*.txt");
         gtk_file_chooser_add_filter(chooser, filter_txt);
-
         GtkFileFilter *filter_md = gtk_file_filter_new();
         gtk_file_filter_set_name(filter_md, "Markdown File (*.md)");
         gtk_file_filter_add_pattern(filter_md, "*.md");
         gtk_file_chooser_add_filter(chooser, filter_md);
-        
         gtk_file_chooser_set_do_overwrite_confirmation(chooser, TRUE);
-        
         res = gtk_native_dialog_run(GTK_NATIVE_DIALOG(native));
         
         if (res == GTK_RESPONSE_ACCEPT) {
