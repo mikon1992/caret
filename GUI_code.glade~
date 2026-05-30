@@ -305,6 +305,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <signal name="activate" handler="on_Autosave_switch_activate" swapped="no"/>
+                <signal name="state-set" handler="on_Autosave_switch_state_set" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
