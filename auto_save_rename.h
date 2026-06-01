@@ -5,10 +5,11 @@
 
 typedef struct RiwayatRename {
     char *nama_lama;
+    char *nama_baru;
     struct RiwayatRename *next;
 } RiwayatRename;
 
-void tambah_riwayat(const char *nama);
+void tambah_riwayat(const char *nama_lama,const char *nama_baru);
 void print_riwayat();
 void hapus_semua_riwayat();
 

@@ -13,7 +13,8 @@ static RiwayatRename *head_riwayat = NULL;
 
 void tambah_riwayat(const char *nama) {
     RiwayatRename *node_baru = malloc(sizeof(RiwayatRename));
-    node_baru->nama_lama = strdup(nama);
+    node_baru->nama_lama = strdup(nama_lama);
+    node_baru->nama_baru = strdup(nama_baru);
     node_baru->next = NULL;
 
     if (head_riwayat == NULL) {
@@ -42,7 +43,7 @@ void print_riwayat() {
     RiwayatRename *sementara = head_riwayat;
     int nomor = 1;
     while (sementara != NULL) {
-        g_print("%d. %s\n", nomor, sementara->nama_lama);
+        g_print("%d. %s  ->  %s\n", nomor, sementara->nama_lama, sementara->nama_baru);
         nomor++;
         sementara = sementara->next;
     }
@@ -158,7 +159,7 @@ G_MODULE_EXPORT void on_menu_rename_activate(GtkMenuItem *menuitem, gpointer use
         if (strlen(nama_baru) > 0) {
             if (rename(lokasi_file_sekarang, nama_baru) == 0) {
 
-                tambah_riwayat(lokasi_file_sekarang);
+                tambah_riwayat(lokasi_file_sekarang, nama_baru);
                 g_print("Nama lama '%s' disimpan ke riwayat.\n", lokasi_file_sekarang);
 
                 g_free(lokasi_file_sekarang);
