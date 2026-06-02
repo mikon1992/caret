@@ -7,11 +7,13 @@
 
 static guint idle_timer_id = 0;
 
+gboolean autosave_aktif = TRUE;
+
 // RIWAYAT RENAME
 
 static RiwayatRename *head_riwayat = NULL;
 
-void tambah_riwayat(const char *nama) {
+void tambah_riwayat(const char *nama_lama, const char *nama_baru) {
     RiwayatRename *node_baru = malloc(sizeof(RiwayatRename));
     node_baru->nama_lama = strdup(nama_lama);
     node_baru->nama_baru = strdup(nama_baru);
@@ -27,7 +29,11 @@ void tambah_riwayat(const char *nama) {
         sementara->next = node_baru;
     }
     if (listbox_riwayat) {
-        GtkWidget *label = gtk_label_new(nama);
+         if (listbox_riwayat) {
+        char teks_label[512];
+        snprintf(teks_label, sizeof(teks_label), "%s  ->  %s", nama_lama, nama_baru);
+
+        GtkWidget *label = gtk_label_new(teks_label);
         gtk_widget_set_halign(label, GTK_ALIGN_START);
         gtk_widget_set_margin_start(label, 6);
         gtk_widget_set_margin_end(label, 6);
@@ -56,6 +62,7 @@ void hapus_semua_riwayat() {
     while (sementara != NULL) {
         RiwayatRename *berikutnya = sementara->next;
         free(sementara->nama_lama);
+        free(sementara->nama_baru);
         free(sementara);
         sementara = berikutnya;
     }
@@ -66,9 +73,26 @@ void hapus_semua_riwayat() {
 // AUTO SAVE 
 
 void autoSave() {
+    if (!autosave_aktif) return;
     if (lokasi_file_sekarang == NULL) return;
     extern void tulis_ke_file(const char *filepath);
     tulis_ke_file(lokasi_file_sekarang);
+}
+
+//Toggle AutoSave
+G_MODULE_EXPORT gboolean on_autosave_toggled(GtkSwitch *widget, gboolean state, gpointer user_data) {
+    autosave_aktif = state;
+  
+    if (Autosave_label) {
+        if (autosave_aktif) {
+            gtk_label_set_text(GTK_LABEL(Autosave_label), "Autosave: ON");
+        } else {
+            gtk_label_set_text(GTK_LABEL(Autosave_label), "Autosave: OFF");
+        }
+    }
+
+    g_print("Autosave: %s\n", autosave_aktif ? "ON" : "OFF");
+    return FALSE;
 }
 
 // NEW FILE 

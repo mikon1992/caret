@@ -2,7 +2,7 @@
 #define AUTO_SAVE_RENAME_H
 
 #include <gtk/gtk.h>
-
+extern gboolean autosave_aktif;
 typedef struct RiwayatRename {
     char *nama_lama;
     char *nama_baru;

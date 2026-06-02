@@ -21,6 +21,7 @@ extern GtkWidget *notebook;
 extern GtkWidget *bookmark_list;
 extern GtkWidget *label_word_count;
 extern GtkWidget *listbox_riwayat;
+extern GtkWidget *Autosave_label;
 extern char *lokasi_file_sekarang;
 extern void autoSave();
 extern GtkWidget *label_cursor_pos;

@@ -9,6 +9,7 @@ GtkWidget *notebook;
 GtkWidget *bookmark_list;
 GtkWidget *label_cursor_pos;
 GtkWidget *listbox_riwayat;
+GtkWidget *Autosave_label;
 
 extern gboolean autosave_cb(gpointer data);
 extern void on_text_changed(GtkTextBuffer *buffer, gpointer user_data); 
