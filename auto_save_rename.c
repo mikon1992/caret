@@ -29,7 +29,6 @@ void tambah_riwayat(const char *nama_lama, const char *nama_baru) {
         sementara->next = node_baru;
     }
     if (listbox_riwayat) {
-         if (listbox_riwayat) {
         char teks_label[512];
         snprintf(teks_label, sizeof(teks_label), "%s  ->  %s", nama_lama, nama_baru);
 

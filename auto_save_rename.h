@@ -17,5 +17,6 @@ void autoSave();
 void trigger_idle_save(); 
 G_MODULE_EXPORT void on_menu_new_named_activate(GtkMenuItem *menuitem, gpointer user_data);
 G_MODULE_EXPORT void on_menu_rename_activate(GtkMenuItem *menuitem, gpointer user_data);
+G_MODULE_EXPORT gboolean on_autosave_toggled(GtkSwitch *widget, gboolean state, gpointer user_data);
 
 #endif
