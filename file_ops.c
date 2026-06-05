@@ -30,6 +30,26 @@ void tambah_info_tab(int index, const char *path) {
     head_tab = new_node;
 }
 
+void hapus_info_tab(int index) {
+    TabNode *current = head_tab;
+    TabNode *prev = NULL;
+    
+    while (current != NULL) {
+        if (current->tab_index == index) {
+            if (prev == NULL) {
+                head_tab = current->next;
+            } else {
+                prev->next = current->next;
+            }
+            g_free(current->filepath);
+            free(current);
+            return;
+        }
+        prev = current;
+        current = current->next;
+    }
+}
+
 char* dapatkan_path_tab(int index) {
     TabNode *current = head_tab;
     while (current != NULL) {
@@ -91,8 +111,20 @@ void update_nama_tab(const char *path) {
     if (current < 0) return;
     GtkWidget *page = gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), current);
     char *nama_file = g_path_get_basename(path);
-    GtkWidget *label = gtk_label_new(nama_file);
-    gtk_notebook_set_tab_label(GTK_NOTEBOOK(notebook), page, label);
+    GtkWidget *tab_widget = gtk_notebook_get_tab_label(GTK_NOTEBOOK(notebook), page);
+    if (GTK_IS_BOX(tab_widget)) {
+        GList *children = gtk_container_get_children(GTK_CONTAINER(tab_widget));
+        for (GList *iter = children; iter != NULL; iter = g_list_next(iter)) {
+            if (GTK_IS_LABEL(iter->data)) {
+                gtk_label_set_text(GTK_LABEL(iter->data), nama_file);
+                break;
+            }
+        }
+        g_list_free(children);
+    } else if (GTK_IS_LABEL(tab_widget)) {
+        gtk_label_set_text(GTK_LABEL(tab_widget), nama_file);
+    }
+
     g_object_set_data_full(G_OBJECT(page), "file_path", g_strdup(path), g_free);
     tambah_info_tab(current, path);
     g_free(nama_file);
@@ -225,7 +257,8 @@ G_MODULE_EXPORT void on_menu_open_activate(GtkMenuItem *menuitem, gpointer user_
             fseek(file, 0, SEEK_END);
             long length = ftell(file);
             fseek(file, 0, SEEK_SET);
-            update_nama_tab(lokasi_file_sekarang);
+            tambah_tab(NULL, NULL);
+            update_nama_tab(filename);
             char *buffer_text = malloc(length + 1);
             if (buffer_text) {
                 fread(buffer_text, 1, length, file);
@@ -297,7 +330,13 @@ G_MODULE_EXPORT void on_menu_daily_notes_activate(GtkMenuItem *menuitem, gpointe
     char filename[256];
     snprintf(filename, sizeof(filename), "%04d-%02d-%02d.md", 
              tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
+             
+    tambah_tab(NULL, NULL); 
+    
+    GtkWidget *active_tv = get_active_textview();
+    if (!active_tv) return;
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(active_tv));
+    
     FILE *file = fopen(filename, "r");
     if (file != NULL) {
         fseek(file, 0, SEEK_END);
@@ -327,9 +366,9 @@ G_MODULE_EXPORT void on_menu_daily_notes_activate(GtkMenuItem *menuitem, gpointe
         }
         g_print("Membuat Daily Note baru: %s\n", filename);
     }
-    if (lokasi_file_sekarang != NULL) g_free(lokasi_file_sekarang);
-    lokasi_file_sekarang = g_strdup(filename);
-} 
+    
+    update_nama_tab(filename);
+}
 
 G_MODULE_EXPORT void on_btn_clicked(GtkButton *btn, gpointer user_data) {
     GtkWidget *dialog = gtk_dialog_new_with_buttons(
@@ -348,7 +387,7 @@ G_MODULE_EXPORT void on_btn_clicked(GtkButton *btn, gpointer user_data) {
         const char *prompt = gtk_entry_get_text(GTK_ENTRY(entry));
         if (strlen(prompt) > 0) {
             char command[1024];
-            snprintf(command, sizeof(command), "C:/Users/rafia/AppData/Local/Python/pythoncore-3.14-64/python.exe gemini_bridge.py \"%s\" 2>&1", prompt);
+            snprintf(command, sizeof(command), "python3 gemini_bridge.py \"%s\" 2>&1", prompt);
             FILE *fp = popen(command, "r");
             if (fp != NULL) {
                 char buffer[256];

@@ -101,22 +101,30 @@ G_MODULE_EXPORT void tambah_bookmark(GtkButton *btn, gpointer data) {
 G_MODULE_EXPORT void buka_bookmark(GtkListBox *box, GtkListBoxRow *row, gpointer data) {
     GtkWidget *label_dlm_list = gtk_bin_get_child(GTK_BIN(row));
     const char *judul_bookmark = gtk_label_get_text(GTK_LABEL(label_dlm_list));
-
     BookmarkNode *node = cari_bookmark_node(judul_bookmark);
     const char *text = node ? node->teks : g_object_get_data(G_OBJECT(label_dlm_list), "text");
-
     if (!text) return;
+    
+    tambah_tab(NULL, NULL);
+    GtkWidget *current_tv = get_active_textview();
+    if (!current_tv) return;
 
-    GtkWidget *text_view = gtk_text_view_new();
-    GtkWidget *scroll = gtk_scrolled_window_new(NULL, NULL);
-    gtk_container_add(GTK_CONTAINER(scroll), text_view);
-
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(text_view));
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(current_tv));
     gtk_text_buffer_set_text(buffer, text, -1);
-
-    GtkWidget *tab_label = gtk_label_new(judul_bookmark);
-    gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scroll, tab_label);
-    gtk_widget_show_all(notebook);
+    int current = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
+    GtkWidget *page = gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), current);
+    GtkWidget *tab_widget = gtk_notebook_get_tab_label(GTK_NOTEBOOK(notebook), page);
+    
+    if (GTK_IS_BOX(tab_widget)) {
+        GList *children = gtk_container_get_children(GTK_CONTAINER(tab_widget));
+        for (GList *iter = children; iter != NULL; iter = g_list_next(iter)) {
+            if (GTK_IS_LABEL(iter->data)) {
+                gtk_label_set_text(GTK_LABEL(iter->data), judul_bookmark);
+                break;
+            }
+        }
+        g_list_free(children);
+    }
 }
 
 void muat_bookmark_dari_file() {

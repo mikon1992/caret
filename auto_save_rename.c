@@ -4,10 +4,11 @@
 #include "globals.h"
 #include "file_ops.h"
 #include "auto_save_rename.h"
+#include <time.h>
 
-static guint idle_timer_id = 0;
-
-gboolean autosave_aktif = TRUE;
+static time_t waktu_terakhir_ketik = 0;
+static guint idle_checker_id = 0;
+gboolean autosave_aktif = FALSE;
 
 // RIWAYAT RENAME
 
@@ -73,9 +74,12 @@ void hapus_semua_riwayat() {
 
 void autoSave() {
     if (!autosave_aktif) return;
-    if (lokasi_file_sekarang == NULL) return;
+    int current_tab = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
+    if (current_tab < 0) return;
+    char *path_aktif = dapatkan_path_tab(current_tab);
+    if (path_aktif == NULL) return;
     extern void tulis_ke_file(const char *filepath);
-    tulis_ke_file(lokasi_file_sekarang);
+    tulis_ke_file(path_aktif);
 }
 
 //Toggle AutoSave
@@ -89,7 +93,13 @@ G_MODULE_EXPORT gboolean on_autosave_toggled(GtkSwitch *widget, gboolean state, 
             gtk_label_set_text(GTK_LABEL(Autosave_label), "Autosave: OFF");
         }
     }
-
+    //TAMBAHAN
+    if (!autosave_aktif && idle_checker_id > 0) {
+        g_source_remove(idle_checker_id);
+        idle_checker_id = 0;
+        waktu_terakhir_ketik = 0; // Reset waktu
+        g_print("Autosave OFF: Timer background dimatikan.\n");
+    }
     g_print("Autosave: %s\n", autosave_aktif ? "ON" : "OFF");
     return FALSE;
 }
@@ -141,19 +151,21 @@ G_MODULE_EXPORT void on_menu_new_named_activate(GtkMenuItem *menuitem, gpointer 
 // RENAME FILE 
 
 G_MODULE_EXPORT void on_menu_rename_activate(GtkMenuItem *menuitem, gpointer user_data) {
-    if (lokasi_file_sekarang == NULL) {
+    // Ambil path dari tab yang sedang aktif!
+    int current_tab = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
+    char *path_aktif = dapatkan_path_tab(current_tab);
+    if (path_aktif == NULL) {
         GtkWidget *info = gtk_message_dialog_new(
             GTK_WINDOW(window),
             GTK_DIALOG_MODAL,
             GTK_MESSAGE_INFO,
             GTK_BUTTONS_OK,
-            "Belum ada file yang dibuka!"
+            "Belum ada file yang dibuka atau file belum pernah disave!"
         );
         gtk_dialog_run(GTK_DIALOG(info));
         gtk_widget_destroy(info);
         return;
     }
-
     GtkWidget *dialog = gtk_dialog_new_with_buttons(
         "Rename File",
         GTK_WINDOW(window),
@@ -162,37 +174,22 @@ G_MODULE_EXPORT void on_menu_rename_activate(GtkMenuItem *menuitem, gpointer use
         "Batal", GTK_RESPONSE_CANCEL,
         NULL
     );
-
     GtkWidget *entry = gtk_entry_new();
-    gtk_entry_set_text(GTK_ENTRY(entry), lokasi_file_sekarang);
-    gtk_box_pack_start(
-        GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
-        gtk_label_new("Nama file baru:"),
-        FALSE, FALSE, 5
-    );
-    gtk_box_pack_start(
-        GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
-        entry,
-        FALSE, FALSE, 5
-    );
+    gtk_entry_set_text(GTK_ENTRY(entry), path_aktif);
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), gtk_label_new("Nama file baru:"), FALSE, FALSE, 5);
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), entry, FALSE, FALSE, 5);
     gtk_widget_show_all(dialog);
-
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
         const char *nama_baru = gtk_entry_get_text(GTK_ENTRY(entry));
         if (strlen(nama_baru) > 0) {
-            if (rename(lokasi_file_sekarang, nama_baru) == 0) {
-
-                tambah_riwayat(lokasi_file_sekarang, nama_baru);
-                g_print("Nama lama '%s' disimpan ke riwayat.\n", lokasi_file_sekarang);
-
-                g_free(lokasi_file_sekarang);
-                lokasi_file_sekarang = g_strdup(nama_baru);
-                g_print("file direname jadi: %s\n", lokasi_file_sekarang);
-
+            if (rename(path_aktif, nama_baru) == 0) {
+                tambah_riwayat(path_aktif, nama_baru);
+                g_print("Nama lama '%s' disimpan ke riwayat.\n", path_aktif);
+                update_nama_tab(nama_baru);
+                g_print("File direname jadi: %s\n", nama_baru);
                 print_riwayat();
-
             } else {
-                g_print("rename gagal!\n");
+                g_print("Rename gagal!\n");
             }
         }
     }
@@ -207,15 +204,18 @@ gboolean autosave_cb(gpointer data) {
 }
 
 gboolean idle_save_cb(gpointer data) {
-    g_print("Idle 10 detik terdeteksi... ");
-    autoSave();
-    idle_timer_id = 0;
-    return FALSE;
+if (waktu_terakhir_ketik > 0 && difftime(time(NULL), waktu_terakhir_ketik) >= 10) {
+        g_print("Idle 10 detik terdeteksi... \n");
+        autoSave();
+        waktu_terakhir_ketik = 0; // Reset biar nggak autoSave terus-terusan
+    }
+    return TRUE; // Biarkan timer pengecekan ini hidup terus
 }
 
 void trigger_idle_save() {
-    if (idle_timer_id > 0) {
-        g_source_remove(idle_timer_id);
+    if (!autosave_aktif) return;
+    waktu_terakhir_ketik = time(NULL); 
+    if (idle_checker_id == 0) {
+        idle_checker_id = g_timeout_add_seconds(1, idle_save_cb, NULL);
     }
-    idle_timer_id = g_timeout_add_seconds(10, idle_save_cb, NULL);
 }

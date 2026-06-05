@@ -59,6 +59,7 @@ G_MODULE_EXPORT void tambah_tab(GtkButton *btn, gpointer data) {
 
     // 3. Masukkan ke dalam Notebook
     gtk_notebook_append_page(GTK_NOTEBOOK(notebook), scroll, tab_box);
+    g_object_set_data(G_OBJECT(scroll), "file_path", NULL);
     gtk_widget_show_all(notebook);
     
     // Pindah fokus langsung ke tab yang baru dibuat
